@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantu Linguistic Autoencoder 85258 - Ukubona Witnesses</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .network-container {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            height: 1000px;
+            margin: 40px auto;
+        }
+        
+        /* Sun at top */
+        .sun {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            z-index: 10;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+        }
+        
+        /* Layer styling */
+        .layer {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .neuron {
+            background: rgba(74, 158, 255, 0.15);
+            border: 3px solid;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 12px;
+        }
+        
+        .neuron:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px currentColor;
+        }
+        
+        /* Layer 1: LANGUAGES (8 neurons) */
+        .layer-1 {
+            top: 820px;
+        }
+        
+        .layer-1 .neuron {
+            width: 120px;
+            height: 120px;
+            border-color: #8b4513;
+            background: rgba(139, 69, 19, 0.2);
+        }
+        
+        /* Layer 2: ROOTS (5 neurons) */
+        .layer-2 {
+            top: 640px;
+        }
+        
+        .layer-2 .neuron {
+            width: 140px;
+            height: 140px;
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.15);
+        }
+        
+        /* Layer 3: INFINITIVES (2 neurons - BOTTLENECK) */
+        .layer-3 {
+            top: 460px;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .layer-3 .neuron {
+            width: 160px;
+            height: 160px;
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+        
+        /* Layer 4: CONJUGATIONS (5 neurons) */
+        .layer-4 {
+            top: 280px;
+        }
+        
+        .layer-4 .neuron {
+            width: 140px;
+            height: 140px;
+            border-color: #67e8f9;
+            background: rgba(103, 232, 249, 0.15);
+        }
+        
+        /* Layer 5: USAGE (8 neurons) */
+        .layer-5 {
+            top: 100px;
+        }
+        
+        .layer-5 .neuron {
+            width: 120px;
+            height: 120px;
+            border-color: #4a9eff;
+            background: rgba(74, 158, 255, 0.2);
+        }
+        
+        /* Earth at bottom */
+        .earth {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+        }
+        
+        /* Text styling */
+        .layer-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            text-align: center;
+            line-height: 1.1;
+        }
+        
+        .layer-name {
+            font-size: 10px;
+            margin-bottom: 2px;
+            text-align: center;
+            font-style: italic;
+            line-height: 1.1;
+        }
+        
+        .layer-role {
+            font-size: 8px;
+            opacity: 0.8;
+            text-align: center;
+            line-height: 1.1;
+        }
+        
+        /* Connection lines - SVG for clean neural net connections */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .connections line {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+        }
+        
+        .neuron {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Labels on sides */
+        .side-label {
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        .encoder-label {
+            left: 20px;
+            top: 580px;
+        }
+        
+        .decoder-label {
+            right: 20px;
+            top: 240px;
+        }
+        
+        .header-text {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #ffd700;
+            width: 100%;
+        }
+        
+        .header-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            font-style: italic;
+            color: #9ab;
+            margin-bottom: 3px;
+        }
+        
+        .architecture-label {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a9eff;
+            letter-spacing: 8px;
+        }
+        
+        @media (max-width: 1280px) {
+            .network-container {
+                transform: scale(0.75);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="network-container">
+        <div class="header-text">
+            <div class="header-title">BANTU LINGUISTIC AUTOENCODER</div>
+            <div class="header-subtitle">Genesis 1:28 - "Muzaala mwale, mweyongere mujjuze ensi"</div>
+            <div class="header-subtitle">"Be fruitful and multiply and fill the earth"</div>
+            <div class="header-subtitle">Ivyabona vya Yehova - Witnesses who survived the collision</div>
+        </div>
+        
+        <div class="architecture-label">8-5-2-5-8</div>
+        
+        <!-- Connection lines as SVG -->
+        <svg class="connections" width="100%" height="100%">
+            <!-- Layer 1 (8) to Layer 2 (5) connections - converging -->
+            <line x1="10%" y1="880" x2="25%" y2="710" />
+            <line x1="20%" y1="880" x2="33%" y2="710" />
+            <line x1="30%" y1="880" x2="41.5%" y2="710" />
+            <line x1="40%" y1="880" x2="50%" y2="710" />
+            <line x1="60%" y1="880" x2="58.5%" y2="710" />
+            <line x1="70%" y1="880" x2="67%" y2="710" />
+            <line x1="80%" y1="880" x2="75%" y2="710" />
+            <line x1="90%" y1="880" x2="75%" y2="710" />
+            
+            <!-- Layer 2 (5) to Layer 3 (2) connections - major compression -->
+            <line x1="25%" y1="640" x2="42%" y2="540" />
+            <line x1="33%" y1="640" x2="42%" y2="540" />
+            <line x1="41.5%" y1="640" x2="50%" y2="540" />
+            <line x1="58.5%" y1="640" x2="58%" y2="540" />
+            <line x1="67%" y1="640" x2="58%" y2="540" />
+            <line x1="75%" y1="640" x2="58%" y2="540" />
+            
+            <!-- Layer 3 (2) to Layer 4 (5) connections - expansion -->
+            <line x1="42%" y1="460" x2="25%" y2="360" />
+            <line x1="42%" y1="460" x2="33%" y2="360" />
+            <line x1="50%" y1="460" x2="41.5%" y2="360" />
+            <line x1="58%" y1="460" x2="58.5%" y2="360" />
+            <line x1="58%" y1="460" x2="67%" y2="360" />
+            <line x1="58%" y1="460" x2="75%" y2="360" />
+            
+            <!-- Layer 4 (5) to Layer 5 (8) connections - diverging -->
+            <line x1="25%" y1="280" x2="10%" y2="170" />
+            <line x1="33%" y1="280" x2="20%" y2="170" />
+            <line x1="41.5%" y1="280" x2="30%" y2="170" />
+            <line x1="50%" y1="280" x2="40%" y2="170" />
+            <line x1="58.5%" y1="280" x2="60%" y2="170" />
+            <line x1="67%" y1="280" x2="70%" y2="170" />
+            <line x1="75%" y1="280" x2="80%" y2="170" />
+            <line x1="75%" y1="280" x2="90%" y2="170" />
+            
+            <!-- Sun to Layer 5 -->
+            <line x1="50%" y1="50" x2="50%" y2="100" stroke="rgba(255, 215, 0, 0.3)" stroke-width="2" />
+        </svg>
+        
+        <!-- Side labels -->
+        <div class="side-label encoder-label">ENCODE ↓</div>
+        <div class="side-label decoder-label">DECODE ↑</div>
+        
+        <!-- Sun -->
+        <div class="sun">☀️</div>
+        
+        <!-- Layer 5: USAGE IN SENTENCE (8 neurons) -->
+        <div class="layer layer-5">
+            <a href="https://example.com/usage-okuzala-1" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">OKUZALA</div>
+                <div class="layer-name" style="color: #67e8f9;">Birth</div>
+                <div class="layer-role" style="color: #9ab;">Gen 1:28</div>
+            </a>
+            <a href="https://example.com/usage-okuzala-2" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">MUZAALE</div>
+                <div class="layer-name" style="color: #67e8f9;">Begetter</div>
+                <div class="layer-role" style="color: #9ab;">Name</div>
+            </a>
+            <a href="https://example.com/usage-okumera" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">OKUMERA</div>
+                <div class="layer-name" style="color: #67e8f9;">Sprout</div>
+                <div class="layer-role" style="color: #9ab;">Root</div>
+            </a>
+            <a href="https://example.com/usage-okukula" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">OKUKULA</div>
+                <div class="layer-name" style="color: #67e8f9;">Mature</div>
+                <div class="layer-role" style="color: #9ab;">Grow</div>
+            </a>
+            <a href="https://example.com/usage-okukona-1" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">OKUKONA</div>
+                <div class="layer-name" style="color: #67e8f9;">Collide</div>
+                <div class="layer-role" style="color: #9ab;">Survive</div>
+            </a>
+            <a href="https://example.com/usage-okukona-2" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">NGIKHONA</div>
+                <div class="layer-name" style="color: #67e8f9;">I'm here!</div>
+                <div class="layer-role" style="color: #9ab;">Still alive</div>
+            </a>
+            <a href="https://example.com/usage-okubona-1" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">OKUBONA</div>
+                <div class="layer-name" style="color: #67e8f9;">Witness</div>
+                <div class="layer-role" style="color: #9ab;">See/Testify</div>
+            </a>
+            <a href="https://example.com/usage-okubona-2" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #4a9eff;">IVYABONA</div>
+                <div class="layer-name" style="color: #67e8f9;">Witnesses</div>
+                <div class="layer-role" style="color: #9ab;">Psalm 23</div>
+            </a>
+        </div>
+        
+        <!-- Layer 4: CONJUGATIONS/INFLECTIONS (5 neurons) -->
+        <div class="layer layer-4">
+            <a href="https://example.com/conjugation-a" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #67e8f9;">-A</div>
+                <div class="layer-name" style="color: #4a9eff;">Indicative</div>
+                <div class="layer-role" style="color: #9ab;">General form</div>
+            </a>
+            <a href="https://example.com/conjugation-e" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #67e8f9;">-E</div>
+                <div class="layer-name" style="color: #4a9eff;">Subjunctive</div>
+                <div class="layer-role" style="color: #9ab;">Command</div>
+            </a>
+            <a href="https://example.com/conjugation-nga" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #67e8f9;">-NGA</div>
+                <div class="layer-name" style="color: #4a9eff;">Progressive</div>
+                <div class="layer-role" style="color: #9ab;">While doing</div>
+            </a>
+            <a href="https://example.com/conjugation-ye" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #67e8f9;">-YE/-ILE</div>
+                <div class="layer-name" style="color: #4a9eff;">Perfect</div>
+                <div class="layer-role" style="color: #9ab;">Completed</div>
+            </a>
+            <a href="https://example.com/conjugation-ire" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #67e8f9;">-IRE</div>
+                <div class="layer-name" style="color: #4a9eff;">Stative</div>
+                <div class="layer-role" style="color: #9ab;">State/Result</div>
+            </a>
+        </div>
+        
+        <!-- Layer 3: INFINITIVES (2 neurons - BOTTLENECK) -->
+        <div class="layer layer-3">
+            <a href="https://example.com/infinitive-uku" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ffd700;">UKU-</div>
+                <div class="layer-name" style="color: #ffed4e;">Infinitive</div>
+                <div class="layer-role" style="color: #9ab;">Luganda/Kinyarwanda</div>
+                <div class="layer-role" style="color: #9ab; margin-top: 4px;">Pure action</div>
+            </a>
+            <a href="https://example.com/infinitive-oku" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ffd700;">OKU-</div>
+                <div class="layer-name" style="color: #ffed4e;">Infinitive</div>
+                <div class="layer-role" style="color: #9ab;">Luganda variant</div>
+                <div class="layer-role" style="color: #9ab; margin-top: 4px;">Core essence</div>
+            </a>
+        </div>
+        
+        <!-- Layer 2: ROOTS (5 neurons) -->
+        <div class="layer layer-2">
+            <a href="https://example.com/root-zal" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ff6b6b;">-ZAL-</div>
+                <div class="layer-name" style="color: #ff8787;">Birth</div>
+                <div class="layer-role" style="color: #9ab;">Generate/Beget</div>
+            </a>
+            <a href="https://example.com/root-mer" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ff6b6b;">-MER-</div>
+                <div class="layer-name" style="color: #ff8787;">Sprout</div>
+                <div class="layer-role" style="color: #9ab;">Root/Emerge</div>
+            </a>
+            <a href="https://example.com/root-kul" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ff6b6b;">-KUL-</div>
+                <div class="layer-name" style="color: #ff8787;">Grow</div>
+                <div class="layer-role" style="color: #9ab;">Mature/Increase</div>
+            </a>
+            <a href="https://example.com/root-kon" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ff6b6b;">-KON-</div>
+                <div class="layer-name" style="color: #ff8787;">Collide</div>
+                <div class="layer-role" style="color: #9ab;">Survive/Persist</div>
+            </a>
+            <a href="https://example.com/root-bon" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #ff6b6b;">-BON-</div>
+                <div class="layer-name" style="color: #ff8787;">See</div>
+                <div class="layer-role" style="color: #9ab;">Witness/Perceive</div>
+            </a>
+        </div>
+        
+        <!-- Layer 1: LANGUAGES (8 neurons) -->
+        <div class="layer layer-1">
+            <a href="https://example.com/language-luganda" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">LUGANDA</div>
+                <div class="layer-name" style="color: #cd853f;">Uganda</div>
+                <div class="layer-role" style="color: #9ab;">Baganda</div>
+            </a>
+            <a href="https://example.com/language-kinyarwanda" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">KINYARWANDA</div>
+                <div class="layer-name" style="color: #cd853f;">Rwanda</div>
+                <div class="layer-role" style="color: #9ab;">Banyarwanda</div>
+            </a>
+            <a href="https://example.com/language-kirundi" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">KIRUNDI</div>
+                <div class="layer-name" style="color: #cd853f;">Burundi</div>
+                <div class="layer-role" style="color: #9ab;">Barundi</div>
+            </a>
+            <a href="https://example.com/language-runyankore" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">RUNYANKORE</div>
+                <div class="layer-name" style="color: #cd853f;">Uganda</div>
+                <div class="layer-role" style="color: #9ab;">Banyankore</div>
+            </a>
+            <a href="https://example.com/language-swahili" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">KISWAHILI</div>
+                <div class="layer-name" style="color: #cd853f;">East Africa</div>
+                <div class="layer-role" style="color: #9ab;">Waswahili</div>
+            </a>
+            <a href="https://example.com/language-zulu" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">ISIZULU</div>
+                <div class="layer-name" style="color: #cd853f;">South Africa</div>
+                <div class="layer-role" style="color: #9ab;">AmaZulu</div>
+            </a>
+            <a href="https://example.com/language-xhosa" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">ISIXHOSA</div>
+                <div class="layer-name" style="color: #cd853f;">South Africa</div>
+                <div class="layer-role" style="color: #9ab;">AmaXhosa</div>
+            </a>
+            <a href="https://example.com/language-shona" class="neuron" style="text-decoration: none;">
+                <div class="layer-title" style="color: #d2691e;">CHISHONA</div>
+                <div class="layer-name" style="color: #cd853f;">Zimbabwe</div>
+                <div class="layer-role" style="color: #9ab;">VaShona</div>
+            </a>
+        </div>
+        
+        <!-- Earth -->
+        <div class="earth">🌍</div>
+    </div>
+</body>
+</html>
