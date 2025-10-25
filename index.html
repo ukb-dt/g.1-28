@@ -246,9 +246,101 @@
                 transform: scale(0.75);
             }
         }
+        
+        /* Info button */
+        .info-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            color: #ffd700;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+        
+        .info-btn:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: scale(1.1);
+        }
+        
+        /* Notes panel - hidden by default */
+        .ukb-note {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(10,10,20,0.95);
+            color: #e8f4ff;
+            border: 2px solid rgba(74,158,255,0.3);
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            z-index: 10001;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .ukb-note.visible {
+            display: block;
+        }
+        
+        .ukb-note h4 { 
+            margin: 0 0 12px; 
+            color: #ffd46a; 
+            font-size: 18px; 
+        }
+        
+        .ukb-note button { 
+            margin-top: 12px; 
+            margin-right: 8px;
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            background: #0b3578; 
+            color: #fff; 
+            border: none;
+            font-size: 13px;
+        }
+        
+        .ukb-note button:hover {
+            background: #1a4a9a;
+        }
+        
+        .ukb-highlight { 
+            box-shadow: 0 0 40px rgba(255,215,0,0.5) !important; 
+            transform: scale(1.15) !important; 
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
+    <button class="info-btn" onclick="toggleUkbNote()" title="About the 'wa' residual">💡</button>
+    
     <div class="network-container">
         <div class="header-text">
             <div class="header-title">BANTU LINGUISTIC AUTOENCODER</div>
@@ -474,112 +566,47 @@
         <div class="earth">🌍</div>
     </div>
 
-<!-- Ukubona annotation panel (paste before </body>) -->
-<!-- --- TOP-CENTERED Ukubona note (replace existing ukb-note block with this) --- -->
-<!-- Ukubona annotation panel -->
-<style>
-  .ukb-note {
-    position: absolute;
-    top: 520px; /* midway, near layer-3 (compression) */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 340px;
-    max-width: 45%;
-    background: rgba(10,10,20,0.92);
-    color: #e8f4ff;
-    border: 1px solid rgba(74,158,255,0.14);
-    padding: 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    line-height: 1.3;
-    z-index: 9999;
-    box-shadow: 0 6px 30px rgba(0,0,0,0.6);
-    border-radius: 8px;
-  }
-  .ukb-note h4 { margin: 0 0 6px; color: #ffd46a; font-size: 14px; }
-  .ukb-note button { margin-top: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; background: #0b3578; color: #fff; border: none; }
-  .ukb-highlight { box-shadow: 0 0 40px rgba(255,215,0,0.25) !important; transform: scale(1.06) !important; }
+    <!-- Notes panel -->
+    <div class="ukb-note" id="ukbNote">
+        <button class="close-btn" onclick="toggleUkbNote()">×</button>
+        <h4>Ukubona note — where <code>wa</code> came from</h4>
+        <div id="ukbText">
+            1. You mapped surface tokens → roots → infinitives → conjugations (encode).<br><br>
+            2. After successful decode, the remaining role-marker (source/possessive) clustered in outputs: that is <code>wa</code> — a relational residual. <br><br>
+            3. In this viz, it appears when you highlight Layer-5 usages (decode). Use the buttons below to step the demonstration.
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap: wrap;">
+            <button onclick="ukbStep('highlight')">Highlight decoded usage</button>
+            <button onclick="ukbStep('showflow')">Show encode→decode flow</button>
+        </div>
+    </div>
 
-  @media (max-width: 800px) {
-    .ukb-note {
-      position: fixed;
-      top: auto;
-      bottom: 18px;
-      left: auto;
-      right: 18px;
-      transform: none;
-      max-width: 80%;
-    }
-  }
-</style>
+    <script>
+        function toggleUkbNote() {
+            const note = document.getElementById('ukbNote');
+            note.classList.toggle('visible');
+        }
 
-<div class="ukb-note" id="ukbNote">
-  <h4>Ukubona note — where <code>wa</code> came from</h4>
-  <div id="ukbText">
-    1. You mapped surface tokens → roots → infinitives → conjugations (encode).<br>
-    2. After successful decode, the remaining role-marker (source/possessive) clustered in outputs: that is <code>wa</code> — a relational residual. <br>
-    3. In this viz, it appears when you highlight Layer-5 usages (decode). Use the buttons below to step the demonstration.
-  </div>
-  <div style="display:flex; gap:8px; margin-top:8px;">
-    <button onclick="ukbStep('highlight')">Highlight decoded usage</button>
-    <button onclick="ukbStep('showflow')">Show encode→decode steps</button>
-  </div>
-</div>
-
-
-<script>
-  // minimize / restore for convenience
-  (function(){
-    const note = document.getElementById('ukbNote');
-    const btn  = document.getElementById('ukbMinBtn');
-    btn.addEventListener('click', () => {
-      if (note.style.height && note.style.height !== '') {
-        // restore
-        note.style.height = '';
-        note.style.overflow = 'auto';
-        btn.textContent = '—';
-        btn.title = 'minimize';
-      } else {
-        // minimize to slim bar
-        note.style.height = '36px';
-        note.style.overflow = 'hidden';
-        btn.textContent = '+';
-        btn.title = 'restore';
-      }
-    });
-  })();
-</script>
-
-
-<script>
-  function ukbStep(action){
-    // highlight Layer 5 usage neurons
-    const layer5 = document.querySelectorAll('.layer-5 .neuron');
-    const layer3 = document.querySelectorAll('.layer-3 .neuron');
-    // clear first
-    document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight'));
-    if(action === 'highlight'){
-      layer5.forEach(n => n.classList.add('ukb-highlight'));
-      document.getElementById('ukbText').innerHTML = '<b>Highlight:</b> Layer-5 usage nodes lit. <br>Observe relational tokens (source/possessive) cluster in decoded outputs — that\'s where <code>wa</code> is visible.';
-    } else if(action === 'showflow'){
-      // flash layer sequence top→bottom then bottom→top
-      const seq = [ ...document.querySelectorAll('.layer-1 .neuron'),
+        function ukbStep(action) {
+            const layer5 = document.querySelectorAll('.layer-5 .neuron');
+            document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight'));
+            
+            if (action === 'highlight') {
+                layer5.forEach(n => n.classList.add('ukb-highlight'));
+                document.getElementById('ukbText').innerHTML = '<b>Highlight:</b> Layer-5 usage nodes lit. <br><br>Observe relational tokens (source/possessive) cluster in decoded outputs — that\'s where <code>wa</code> is visible.';
+            } else if (action === 'showflow') {
+                const seq = [
+                    ...document.querySelectorAll('.layer-1 .neuron'),
                     ...document.querySelectorAll('.layer-2 .neuron'),
                     ...document.querySelectorAll('.layer-3 .neuron'),
                     ...document.querySelectorAll('.layer-4 .neuron'),
-                    ...document.querySelectorAll('.layer-5 .neuron') ];
-      let i=0;
-      const t = setInterval(()=>{
-        document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight'));
-        if(i<seq.length) seq[i].classList.add('ukb-highlight');
-        if(i===seq.length){ clearInterval(t); setTimeout(()=>{ document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight')) },400); }
-        i++;
-      },160);
-      document.getElementById('ukbText').innerHTML = '<b>Flow:</b> encoding (languages→roots→infinitives) then decoding (conjugations→usage). Relational residues appear on decode.';
-    }
-  }
-</script>
-
-    
-</body>
-</html>
+                    ...document.querySelectorAll('.layer-5 .neuron')
+                ];
+                let i = 0;
+                const t = setInterval(() => {
+                    document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight'));
+                    if (i < seq.length) seq[i].classList.add('ukb-highlight');
+                    if (i === seq.length) {
+                        clearInterval(t);
+                        setTimeout(() => {
+                            document.
