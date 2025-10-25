@@ -475,41 +475,109 @@
     </div>
 
 <!-- Ukubona annotation panel (paste before </body>) -->
+<!-- --- TOP-CENTERED Ukubona note (replace existing ukb-note block with this) --- -->
 <style>
+  /* top-centered note: reads top → down (doesn't cover bottleneck) */
   .ukb-note {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    width: 320px;
-    max-width: 40%;
+    position: absolute;
+    top: 24px;                 /* sits near the top of the network container */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 640px;              /* wide, readable — flows downward */
+    max-width: calc(100% - 48px);
+    max-height: 220px;        /* compact vertical footprint */
+    overflow: auto;           /* scroll once the note grows */
     background: rgba(10,10,20,0.92);
     color: #e8f4ff;
     border: 1px solid rgba(74,158,255,0.14);
-    padding: 12px;
+    padding: 12px 14px;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    line-height: 1.3;
-    z-index: 9999;
+    line-height: 1.35;
+    z-index: 40;              /* above neurons and connections */
     box-shadow: 0 6px 30px rgba(0,0,0,0.6);
     border-radius: 8px;
+    pointer-events: auto;
   }
-  .ukb-note h4 { margin: 0 0 6px; color: #ffd46a; font-size: 14px; }
-  .ukb-note button { margin-top: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; background: #0b3578; color: #fff; border: none; }
+
+  .ukb-note h4 { margin: 0 0 6px; color: #ffd46a; font-size: 15px; display:inline-block; vertical-align: middle; }
+  .ukb-note .ukb-controls { float: right; }
+  .ukb-note button {
+    margin-left: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #0b3578;
+    color: #fff;
+    border: none;
+    font-size: 12px;
+  }
+  .ukb-note .ukb-collapse {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #ffd46a;
+  }
+
+  .ukb-note .ukb-body { margin-top: 8px; clear: both; font-size: 13px; }
   .ukb-highlight { box-shadow: 0 0 40px rgba(255,215,0,0.25) !important; transform: scale(1.06) !important; }
+
+  /* responsive fallback: on very narrow screens make it fixed bottom-right */
+  @media (max-width: 800px) {
+    .ukb-note {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      left: auto;
+      top: auto;
+      transform: none;
+      width: calc(100% - 36px);
+      max-width: 95%;
+      max-height: 40vh;
+      z-index: 9999;
+    }
+  }
 </style>
 
-<div class="ukb-note" id="ukbNote">
-  <h4>Ukubona note — where <code>wa</code> came from</h4>
-  <div id="ukbText">
+<div class="ukb-note" id="ukbNote" role="region" aria-label="Ukubona note">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <h4>Ukubona note — where <code>wa</code> came from</h4>
+    <div class="ukb-controls" aria-hidden="false">
+      <button id="ukbMinBtn" class="ukb-collapse" title="minimize">—</button>
+      <button onclick="ukbStep('highlight')" title="highlight decoded usage">Highlight</button>
+      <button onclick="ukbStep('showflow')" title="show encode→decode flow">Flow</button>
+    </div>
+  </div>
+
+  <div id="ukbText" class="ukb-body">
     1. You mapped surface tokens → roots → infinitives → conjugations (encode).<br>
     2. After successful decode, the remaining role-marker (source/possessive) clustered in outputs: that is <code>wa</code> — a relational residual. <br>
-    3. In this viz, it appears when you highlight Layer-5 usages (decode). Use the buttons below to step the demonstration.
-  </div>
-  <div style="display:flex; gap:8px; margin-top:8px;">
-    <button onclick="ukbStep('highlight')">Highlight decoded usage</button>
-    <button onclick="ukbStep('showflow')">Show encode→decode steps</button>
+    3. In this viz, it appears when you highlight Layer-5 usages (decode). Use the buttons above to step the demonstration.
   </div>
 </div>
+
+<script>
+  // minimize / restore for convenience
+  (function(){
+    const note = document.getElementById('ukbNote');
+    const btn  = document.getElementById('ukbMinBtn');
+    btn.addEventListener('click', () => {
+      if (note.style.height && note.style.height !== '') {
+        // restore
+        note.style.height = '';
+        note.style.overflow = 'auto';
+        btn.textContent = '—';
+        btn.title = 'minimize';
+      } else {
+        // minimize to slim bar
+        note.style.height = '36px';
+        note.style.overflow = 'hidden';
+        btn.textContent = '+';
+        btn.title = 'restore';
+      }
+    });
+  })();
+</script>
+
 
 <script>
   function ukbStep(action){
