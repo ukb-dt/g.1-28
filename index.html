@@ -609,4 +609,15 @@
                     if (i === seq.length) {
                         clearInterval(t);
                         setTimeout(() => {
-                            document.
+                            document.querySelectorAll('.neuron').forEach(n => n.classList.remove('ukb-highlight'));
+                        }, 400);
+                    }
+                    i++;
+                }, 160);
+                document.getElementById('ukbText').innerHTML = '<b>Flow:</b> encoding (languages→roots→infinitives) then decoding (conjugations→usage). Relational residues appear on decode.';
+            }
+        }
+    </script>
+    
+</body>
+</html>
